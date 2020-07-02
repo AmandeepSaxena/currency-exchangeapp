@@ -6,7 +6,7 @@ pipeline{
 		PATH = "$dockerHome/bin:$mavenHome/bin:$PATH"
 	}
 	stages{
-		stage("Build"){
+		stage("Checkout"){
 			steps{
 				echo "Build"
 				echo "Path - $PATH"	
@@ -18,7 +18,34 @@ pipeline{
 				sh  'docker version'
 			}
 		}
-		
+		stage('Compile'){
+			steps{
+				sh 'mvn clean compile'   
+			}	
+		}
+		stage('Test'){
+			steps{
+				sh 'mvn test'
+			}
+		}
+		stage('Integration Test'){
+			steps{
+				sh 'mvn failsafe:integration-test failsafe:verify'
+			}
+		}
+		stage('Build Docker Image'){
+			steps{
+				dockerImage = docker.build('noobaman/currency-exchangeapp:${env.BUILD_TAG}')
+			}
+		}
+		stage('Push Docker Image'){
+			steps{
+				docker.withRegistry('','dockerhub'){
+					dockerImage.push();
+					dockerImage.push('latest')
+				}
+			}
+		}
 	}
 	
 }
