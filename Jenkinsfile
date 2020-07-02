@@ -36,7 +36,7 @@ pipeline{
 		stage('Build Docker Image'){
 			steps{
 				script{
-					dockerImage = docker.build('noobaman/currency-exchangeapp:${env.BUILD_TAG}')
+					docker.build('noobaman/currency-exchangeapp:${env.BUILD_TAG}')
 				}
 			}
 		}
