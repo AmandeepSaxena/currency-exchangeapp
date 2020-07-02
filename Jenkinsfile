@@ -35,14 +35,18 @@ pipeline{
 		}
 		stage('Build Docker Image'){
 			steps{
-				dockerImage = docker.build('noobaman/currency-exchangeapp:${env.BUILD_TAG}')
+				script{
+					dockerImage = docker.build('noobaman/currency-exchangeapp:${env.BUILD_TAG}')
+				}
 			}
 		}
 		stage('Push Docker Image'){
 			steps{
-				docker.withRegistry('','dockerhub'){
+				script{
+					docker.withRegistry('','dockerhub'){
 					dockerImage.push();
 					dockerImage.push('latest')
+				}
 				}
 			}
 		}
